@@ -5,6 +5,7 @@
 
 ;; in production, use "ucome"
 (cl-mongo:db.use "test")
+
 (defvar *coll* "rb_2017")
 
 (defmacro navi ()
@@ -55,7 +56,7 @@
 
 ;; FIXME: sort by id
 (defun groups ()
-  (docs (iter (cl-mongo:db.find *coll* :all))))
+  (docs (iter (cl-mongo:db.find *coll* ($ "status" 1) :limit 0))))
 
 (define-easy-handler (index :uri "/index") ()
   (standard-page
@@ -64,13 +65,29 @@
      (dolist (g (groups))
        (htm
         (:tr
-         (:td (str (get-element "id" g)))
+         (:td
+          (:form :method "post" :action "/delete"
+                 (:input :type "submit"
+                         :name "id"
+                         :value (str (get-element "id" g)))))
          (:td (str (get-element "m1" g)))
          (:td (str (get-element "m2" g)))
          (:td (str (get-element "m3" g)))
          (:td (str (get-element "name" g)))
          ))))
     (:p (:a :class "btn btn-primary" :href "/new" "new group"))))
+
+;; FIXME delete(update)ができねー。シンタックスがわからん。
+(define-easy-handler (disable :uri "/delete") (id)
+  (cl-mongo:db.update
+   *coll*
+   ($ "id" (parse-integer id))
+   ;;(kv "$set" (kv "status" 0))
+   ;;($ ($set ($ "status 0")))
+   ($set "status" 0))
+  (standard-page
+      (:h2 "disabled " (str id))
+      (:p (:a :href "/index" "back"))))
 
 (define-easy-handler (new :uri "/new") ()
   (standard-page
@@ -95,7 +112,8 @@
         ($ "name" name)
         ($ "m1" m1)
         ($ "m2" m2)
-        ($ "m3" m3)))
+        ($ "m3" m3)
+        ($ "status" 1)))
     (redirect "/index")
     ))
 
