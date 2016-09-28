@@ -60,7 +60,7 @@
   (docs (iter (cl-mongo:db.sort *coll* ($ "status" 1)
                                 :limit 0
                                 :field "gid"
-                                :asc t))))
+1                                :asc t))))
 
 (define-easy-handler (index :uri "/index") ()
   (standard-page
@@ -115,20 +115,43 @@
            (:p (:input :type "submit" :value "create")))
     (:p (:a :href "/index" "back"))))
 
-(defun id-max ()
-  (length (docs (iter (cl-mongo:db.find *coll* :all)))))
+;;BUG.
+(defun unique? (key value)
+  (not (docs (cl-mongo:db.find *coll* ($ ($ "status" 1) ($ key value))))))
+
+(defun unique-mem? (mem)
+  (and (unique? "m1" mem)
+       (unique? "m2" mem)
+       (unique? "m3" mem)))
+
+(defun unique-name? (name)
+  (unique? "name" name))
+
+;;FIXME ださい。
+(defun validate (name m1 m2 m3)
+  (and (unique-name? name)
+       (unique-mem? m1)
+       (unique-mem? m2)
+       (unique-mem? m3)))
 
 (define-easy-handler (create :uri "/create") (name m1 m2 m3)
-  (let ((id (+ 1 (id-max))))
-    (cl-mongo:db.insert
-     *coll*
-     ($ ($ "gid" id)
-        ($ "robocar" (mod id *number-of-robocars*))
-        ($ "name" name)
-        ($ "m1" m1)
-        ($ "m2" m2)
-        ($ "m3" m3)
-        ($ "status" 1)))
-    (redirect "/index")))
+  (if (validate name m1 m2 m3)
+      (let ((id (+ 1 (length
+                      (docs
+                       (iter (cl-mongo:db.find *coll* :all)))))))
+        (cl-mongo:db.insert
+         *coll*
+         ($ ($ "gid" id)
+            ($ "robocar" (mod id *number-of-robocars*))
+            ($ "name" name)
+            ($ "m1" m1)
+            ($ "m2" m2)
+            ($ "m3" m3)
+            ($ "status" 1)))
+        (redirect "/index"))
+      (standard-page
+        (:h2 :class "warn")
+        (:p "グループ名かメンバーに重複があります。")
+        (:p "ブラウザのバックボタンで元のページに戻ってやり直してください。")
+        (:p (:a :href "/index" "top")))))
 
-;;(create :name "name2" :m1 1 :m2 2 :m3 3)

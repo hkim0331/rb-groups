@@ -5,6 +5,7 @@
 ## Todo
 
 * 入力のバリデーション、学生番号、グループ名はユニークか？
+* alert befor delete
 
 ## Done
 
