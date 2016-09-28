@@ -77,20 +77,18 @@
          ))))
     (:p (:a :class "btn btn-primary" :href "/new" "new group"))))
 
-;; FIXME delete(update)ができねー。シンタックスがわからん。
 (define-easy-handler (disable :uri "/delete") (id)
   (multiple-value-bind (user pass) (authorization)
     (if (and (string= user "hkimura") (string= pass "pass"))
         (progn
-          (cl-mongo:db.update
-           *coll*
-           ($ "id" (parse-integer id))
-           ;;(kv "$set" (kv "status" 0))
-           ;;($ ($set ($ "status 0")))
-           ($set "status" 0))
-          (standard-page
-            (:h2 "disabled " (str id))
-            (:p (:a :href "/index" "back")))
+          ;; LOOK and LERAN THIS
+          (cl-mongo:db.update *coll*
+                              ($ "id" (parse-integer id))
+                              ($set "status" 0))
+          (redirect "/index")
+          ;; (standard-page
+          ;;   (:h2 "disabled " (str id))
+          ;;   (:p (:a :href "/index" "back")))
           )
         (require-authorization))))
 
