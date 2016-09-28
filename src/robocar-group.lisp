@@ -57,10 +57,11 @@
 
 ;; CHECK: sort
 (defun groups ()
-  (docs (iter (cl-mongo:db.sort *coll* ($ "status" 1)
+  (docs (iter (cl-mongo:db.sort *coll*
+                                ($ "status" 1)
                                 :limit 0
                                 :field "gid"
-1                                :asc t))))
+                                :asc t))))
 
 (define-easy-handler (index :uri "/index") ()
   (standard-page
