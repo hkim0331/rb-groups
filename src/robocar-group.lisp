@@ -8,13 +8,12 @@
 (defvar *coll* "rb_2017")
 
 (defmacro navi ()
-  `(htm (:p
-         :class "navi"
-         "["
+  `(htm (:p :class "navi"
+         "[ "
          (:a :href "http://robocar-2017.melt.kyutech.ac.jp" "robocar")
          " | "
          (:a :href "http://www.melt.kyutech.ac.jp" "hkimura lab.")
-         "]")
+         " ]")
         (:hr)))
 
 (defmacro standard-page (&body body)
@@ -81,7 +80,8 @@
            (:p "member1 " (:input :name "m1"))
            (:p "member2 " (:input :name "m2"))
            (:p "member3 " (:input :name "m3"))
-           (:p (:input :type "submit" :value "create")))))
+           (:p (:input :type "submit" :value "create")))
+    (:p (:a :href "/index" "back"))))
 
 ;; how about returns (+ 1 count())?
 (defun max-id ()
