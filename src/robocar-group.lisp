@@ -7,6 +7,9 @@
 (cl-mongo:db.use "test")
 
 (defvar *coll* "rb_2017")
+(defvar *http*)
+(defvar *my-addr* "127.0.0.1")
+(defvar *number-of-robocars* 40)
 
 (defmacro navi ()
   `(htm (:p :class "navi"
@@ -38,9 +41,6 @@
              (:hr)
              (:p "programmed by hkimura."))))))
 
-(defvar *http*)
-(defvar *my-addr* "127.0.0.1")
-
 (defun start-server (&optional (port 8080))
   (setf (html-mode) :html5)
   (push (create-static-file-dispatcher-and-handler
@@ -61,35 +61,36 @@
 (define-easy-handler (index :uri "/index") ()
   (standard-page
     (:table
-     (:tr (:th "id") (:th "mem1") (:th "mem2") (:th "mem3") (:th "group name") )
+     (:tr (:th "group")
+          (:th "robocar")
+          (:th "mem1")
+          (:th "mem2")
+          (:th "mem3")
+          (:th "group name"))
      (dolist (g (groups))
        (htm
         (:tr
          (:td
           (:form :method "post" :action "/delete"
                  (:input :type "submit"
-                         :name "id"
-                         :value (str (get-element "id" g)))))
+                         :name "gid"
+                         :value (str (get-element "gid" g)))))
+         (:td (str (get-element "robocar" g)))
          (:td (str (get-element "m1" g)))
          (:td (str (get-element "m2" g)))
          (:td (str (get-element "m3" g)))
-         (:td (str (get-element "name" g)))
-         ))))
+         (:td (str (get-element "name" g)))))))
     (:p (:a :class "btn btn-primary" :href "/new" "new group"))))
 
-(define-easy-handler (disable :uri "/delete") (id)
+(define-easy-handler (disable :uri "/delete") (gid)
   (multiple-value-bind (user pass) (authorization)
     (if (and (string= user "hkimura") (string= pass "pass"))
         (progn
-          ;; LOOK and LERAN THIS
+          ;; !!! LOOK and LEARN update !!!
           (cl-mongo:db.update *coll*
-                              ($ "id" (parse-integer id))
+                              ($ "gid" (parse-integer gid))
                               ($set "status" 0))
-          (redirect "/index")
-          ;; (standard-page
-          ;;   (:h2 "disabled " (str id))
-          ;;   (:p (:a :href "/index" "back")))
-          )
+          (redirect "/index"))
         (require-authorization))))
 
 (define-easy-handler (new :uri "/new") ()
@@ -103,7 +104,6 @@
            (:p (:input :type "submit" :value "create")))
     (:p (:a :href "/index" "back"))))
 
-;; how about returns (+ 1 count())?
 (defun max-id ()
   (length (docs (iter (cl-mongo:db.find *coll* :all)))))
 
@@ -111,13 +111,13 @@
   (let ((id (+ 1 (max-id))))
     (cl-mongo:db.insert
      *coll*
-     ($ ($ "id" id)
+     ($ ($ "gid" id)
+        ($ "robocar" (mod id *number-of-robocars*))
         ($ "name" name)
         ($ "m1" m1)
         ($ "m2" m2)
         ($ "m3" m3)
         ($ "status" 1)))
-    (redirect "/index")
-    ))
+    (redirect "/index")))
 
 ;;(create :name "name2" :m1 1 :m2 2 :m3 3)
