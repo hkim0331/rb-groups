@@ -6,10 +6,11 @@
 ;; in production, use "ucome"
 (cl-mongo:db.use "test")
 
+(defvar *number-of-robocars* 40)
+
 (defvar *coll* "rb_2017")
 (defvar *http*)
 (defvar *my-addr* "127.0.0.1")
-(defvar *number-of-robocars* 40)
 
 (defmacro navi ()
   `(htm (:p :class "navi"
@@ -17,8 +18,7 @@
          (:a :href "http://robocar-2017.melt.kyutech.ac.jp" "robocar")
          " | "
          (:a :href "http://www.melt.kyutech.ac.jp" "hkimura lab.")
-         " ]")
-        (:hr)))
+         " ]")))
 
 (defmacro standard-page (&body body)
   `(with-html-output-to-string
@@ -34,12 +34,13 @@
        (:link :rel "stylesheet" :href "/style.css")
        (:title "group making/maintenace page"))
       (:body
-       (:div :class "container"
-             (:h1 :class "page-header hidden-xs" "Robocar 2017 Groups ")
-             (navi)
-             ,@body
-             (:hr)
-             (:p "programmed by hkimura."))))))
+       (:div
+        :class "container"
+        (:h1 :class "page-header hidden-xs" "Robocar 2017 Groups ")
+        (navi)
+        ,@body
+        (:hr)
+        (:p "programmed by hkimura."))))))
 
 (defun start-server (&optional (port 8080))
   (setf (html-mode) :html5)
@@ -60,26 +61,29 @@
 
 (define-easy-handler (index :uri "/index") ()
   (standard-page
-    (:table
-     (:tr (:th "group")
-          (:th "robocar")
-          (:th "mem1")
-          (:th "mem2")
-          (:th "mem3")
-          (:th "group name"))
-     (dolist (g (groups))
-       (htm
-        (:tr
-         (:td
-          (:form :method "post" :action "/delete"
-                 (:input :type "submit"
-                         :name "gid"
-                         :value (str (get-element "gid" g)))))
-         (:td (str (get-element "robocar" g)))
-         (:td (str (get-element "m1" g)))
-         (:td (str (get-element "m2" g)))
-         (:td (str (get-element "m3" g)))
-         (:td (str (get-element "name" g)))))))
+    (:table :class "table table-hover"
+     (:thead :class "thead-default"
+      (:tr (:th "#")
+           (:th "robocar")
+           (:th "mem1")
+           (:th "mem2")
+           (:th "mem3")
+           (:th "group name")))
+     (:tbody
+      (dolist (g (groups))
+        (htm
+         (:tr
+          (:td
+           (:form :method "post" :action "/delete"
+                  (:input :type "submit"
+                          :name "gid"
+                          :value (str (get-element "gid" g)))))
+          (:td (str (get-element "robocar" g)))
+          (:td (str (get-element "m1" g)))
+          (:td (str (get-element "m2" g)))
+          (:td (str (get-element "m3" g)))
+          (:td (str (get-element "name" g))))))))
+    (:br)
     (:p (:a :class "btn btn-primary" :href "/new" "new group"))))
 
 (define-easy-handler (disable :uri "/delete") (gid)
@@ -97,18 +101,22 @@
   (standard-page
     (:h2 "Group creation")
     (:form :method "post" :action "/create"
-           (:p "group name " (:input :name "name"))
-           (:p "member1 " (:input :name "m1"))
-           (:p "member2 " (:input :name "m2"))
-           (:p "member3 " (:input :name "m3"))
+           (:p "group name "
+               (:input :name "name" :placeholder "ユニークな名前"))
+           (:p "member1 "
+               (:input :name "m1" :placeholder "学生番号半角8数字"))
+           (:p "member2 "
+               (:input :name "m2" :placeholder "学生番号半角8数字"))
+           (:p "member3 "
+               (:input :name "m3" :placeholder "学生番号半角8数字"))
            (:p (:input :type "submit" :value "create")))
     (:p (:a :href "/index" "back"))))
 
-(defun max-id ()
+(defun id-max ()
   (length (docs (iter (cl-mongo:db.find *coll* :all)))))
 
 (define-easy-handler (create :uri "/create") (name m1 m2 m3)
-  (let ((id (+ 1 (max-id))))
+  (let ((id (+ 1 (id-max))))
     (cl-mongo:db.insert
      *coll*
      ($ ($ "gid" id)
