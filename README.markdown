@@ -5,17 +5,30 @@
 ## Todo
 
 * mongodb sort
+* 入力のバリデーション、学生番号、グループ名はユニークか？
+
+## Done
+
 * テーブルの色付け
 * placeholder
 * ボタンのサイズ
 
 ## Usage
 
-(start-server)
+```
+$ mongodb start
+```
+
+```
+> (ql:quickload :robocar-group)
+> (start-server)
+```
 
 ## Installation
 
-(ql:quickload :robocar-group)
+```
+$ git clone https://github.com/hkim0331/robocar-group.git
+```
 
 ## Author
 
