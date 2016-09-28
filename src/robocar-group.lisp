@@ -17,7 +17,7 @@
          "[ "
          (:a :href "http://robocar-2017.melt.kyutech.ac.jp" "robocar")
          " | "
-         (:a :href "http://www.melt.kyutech.ac.jp" "hkimura lab.")
+         (:a :href "http://www.melt.kyutech.ac.jp" "hkimura lab")
          " ]")))
 
 (defmacro standard-page (&body body)
@@ -159,6 +159,7 @@
       (standard-page
         (:h2 :class "warn")
         (:p "グループ名かメンバーに重複があります。")
+        (:p "または不正な学生番号か。")
         (:p "ブラウザのバックボタンで元のページに戻ってやり直してください。")
         (:p (:a :href "/index" "top")))))
 
