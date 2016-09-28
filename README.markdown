@@ -4,11 +4,11 @@
 
 ## Todo
 
-* mongodb sort
 * 入力のバリデーション、学生番号、グループ名はユニークか？
 
 ## Done
 
+* mongodb sort
 * テーブルの色付け
 * placeholder
 * ボタンのサイズ

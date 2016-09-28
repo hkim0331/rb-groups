@@ -55,9 +55,12 @@
 (defun stop-server ()
   (stop *http*))
 
-;; FIXME: sort by id
+;; CHECK: sort
 (defun groups ()
-  (docs (iter (cl-mongo:db.find *coll* ($ "status" 1) :limit 0))))
+  (docs (iter (cl-mongo:db.sort *coll* ($ "status" 1)
+                                :limit 0
+                                :field "gid"
+                                :asc t))))
 
 (define-easy-handler (index :uri "/index") ()
   (standard-page
