@@ -79,15 +79,20 @@
 
 ;; FIXME delete(update)ができねー。シンタックスがわからん。
 (define-easy-handler (disable :uri "/delete") (id)
-  (cl-mongo:db.update
-   *coll*
-   ($ "id" (parse-integer id))
-   ;;(kv "$set" (kv "status" 0))
-   ;;($ ($set ($ "status 0")))
-   ($set "status" 0))
-  (standard-page
-      (:h2 "disabled " (str id))
-      (:p (:a :href "/index" "back"))))
+  (multiple-value-bind (user pass) (authorization)
+    (if (and (string= user "hkimura") (string= pass "pass"))
+        (progn
+          (cl-mongo:db.update
+           *coll*
+           ($ "id" (parse-integer id))
+           ;;(kv "$set" (kv "status" 0))
+           ;;($ ($set ($ "status 0")))
+           ($set "status" 0))
+          (standard-page
+            (:h2 "disabled " (str id))
+            (:p (:a :href "/index" "back")))
+          )
+        (require-authorization))))
 
 (define-easy-handler (new :uri "/new") ()
   (standard-page
