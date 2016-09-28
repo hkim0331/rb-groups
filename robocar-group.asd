@@ -18,6 +18,7 @@
   :license ""
   :depends-on (:hunchentoot
                :cl-who
+               :cl-ppcre
                :cl-mongo)
   :components ((:module "src"
                 :components

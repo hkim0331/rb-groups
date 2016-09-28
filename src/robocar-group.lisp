@@ -1,6 +1,6 @@
 (in-package :cl-user)
 (defpackage robocar-group
-  (:use :cl :hunchentoot :cl-who :cl-mongo))
+  (:use :cl :hunchentoot :cl-who :cl-mongo :cl-ppcre))
 (in-package :robocar-group)
 
 ;; in production, use "ucome"
@@ -128,12 +128,18 @@
 (defun unique-name? (name)
   (unique? "name" name))
 
+(defun sid? (num)
+  (cl-ppcre:scan "^[0-9]{8}$" num))
+
 ;;FIXME ださい。
 (defun validate (name m1 m2 m3)
   (and (unique-name? name)
        (unique-mem? m1)
        (unique-mem? m2)
-       (unique-mem? m3)))
+       (unique-mem? m3)
+       (sid? m1)
+       (sid? m2)
+       (sid? m3)))
 
 (define-easy-handler (create :uri "/create") (name m1 m2 m3)
   (if (validate name m1 m2 m3)
