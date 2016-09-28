@@ -4,11 +4,13 @@
 
 ## Todo
 
+* 入力値のバリデーション、それは学生番号か？
 
 ## Done
 
-* mongodb sort（find と一緒。簡単）
 * 入力のバリデーション、学生番号、グループ名はユニークか？(半分)
+* alert befor delete
+* mongodb sort（find と一緒。簡単）
 * テーブルの色付け
 * placeholder
 * ボタンのサイズ
