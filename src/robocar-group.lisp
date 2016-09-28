@@ -6,7 +6,11 @@
 ;; in production, use "ucome"
 (cl-mongo:db.use "test")
 
+(defvar *number-of-robocars* 40)
+
 (defvar *coll* "rb_2017")
+(defvar *http*)
+(defvar *my-addr* "127.0.0.1")
 
 (defmacro navi ()
   `(htm (:p :class "navi"
@@ -14,8 +18,7 @@
          (:a :href "http://robocar-2017.melt.kyutech.ac.jp" "robocar")
          " | "
          (:a :href "http://www.melt.kyutech.ac.jp" "hkimura lab.")
-         " ]")
-        (:hr)))
+         " ]")))
 
 (defmacro standard-page (&body body)
   `(with-html-output-to-string
@@ -31,15 +34,13 @@
        (:link :rel "stylesheet" :href "/style.css")
        (:title "group making/maintenace page"))
       (:body
-       (:div :class "container"
-             (:h1 :class "page-header hidden-xs" "Robocar 2017 Groups ")
-             (navi)
-             ,@body
-             (:hr)
-             (:p "programmed by hkimura."))))))
-
-(defvar *http*)
-(defvar *my-addr* "127.0.0.1")
+       (:div
+        :class "container"
+        (:h1 :class "page-header hidden-xs" "Robocar 2017 Groups ")
+        (navi)
+        ,@body
+        (:hr)
+        (:p "programmed by hkimura."))))))
 
 (defun start-server (&optional (port 8080))
   (setf (html-mode) :html5)
@@ -54,72 +55,103 @@
 (defun stop-server ()
   (stop *http*))
 
-;; FIXME: sort by id
+;; CHECK: sort
 (defun groups ()
-  (docs (iter (cl-mongo:db.find *coll* ($ "status" 1) :limit 0))))
+  (docs (iter (cl-mongo:db.sort *coll* ($ "status" 1)
+                                :limit 0
+                                :field "gid"
+1                                :asc t))))
 
 (define-easy-handler (index :uri "/index") ()
   (standard-page
-    (:table
-     (:tr (:th "id") (:th "mem1") (:th "mem2") (:th "mem3") (:th "group name") )
-     (dolist (g (groups))
-       (htm
-        (:tr
-         (:td
-          (:form :method "post" :action "/delete"
-                 (:input :type "submit"
-                         :name "id"
-                         :value (str (get-element "id" g)))))
-         (:td (str (get-element "m1" g)))
-         (:td (str (get-element "m2" g)))
-         (:td (str (get-element "m3" g)))
-         (:td (str (get-element "name" g)))
-         ))))
+    (:table :class "table table-hover"
+     (:thead :class "thead-default"
+      (:tr (:th "#")
+           (:th "robocar")
+           (:th "mem1")
+           (:th "mem2")
+           (:th "mem3")
+           (:th "group name")))
+     (:tbody
+      (dolist (g (groups))
+        (htm
+         (:tr
+          (:td
+           (:form :method "post" :action "/delete"
+                  (:input :type "submit"
+                          :name "gid"
+                          :value (str (get-element "gid" g)))))
+          (:td (str (get-element "robocar" g)))
+          (:td (str (get-element "m1" g)))
+          (:td (str (get-element "m2" g)))
+          (:td (str (get-element "m3" g)))
+          (:td (str (get-element "name" g))))))))
+    (:br)
     (:p (:a :class "btn btn-primary" :href "/new" "new group"))))
 
-;; FIXME delete(update)ができねー。シンタックスがわからん。
-(define-easy-handler (disable :uri "/delete") (id)
+(define-easy-handler (disable :uri "/delete") (gid)
   (multiple-value-bind (user pass) (authorization)
     (if (and (string= user "hkimura") (string= pass "pass"))
         (progn
-          (cl-mongo:db.update
-           *coll*
-           ($ "id" (parse-integer id))
-           ;;(kv "$set" (kv "status" 0))
-           ;;($ ($set ($ "status 0")))
-           ($set "status" 0))
-          (standard-page
-            (:h2 "disabled " (str id))
-            (:p (:a :href "/index" "back")))
-          )
+          ;; !!! LOOK and LEARN update !!!
+          (cl-mongo:db.update *coll*
+                              ($ "gid" (parse-integer gid))
+                              ($set "status" 0))
+          (redirect "/index"))
         (require-authorization))))
 
 (define-easy-handler (new :uri "/new") ()
   (standard-page
     (:h2 "Group creation")
     (:form :method "post" :action "/create"
-           (:p "group name " (:input :name "name"))
-           (:p "member1 " (:input :name "m1"))
-           (:p "member2 " (:input :name "m2"))
-           (:p "member3 " (:input :name "m3"))
+           (:p "group name "
+               (:input :name "name" :placeholder "ユニークな名前"))
+           (:p "member1 "
+               (:input :name "m1" :placeholder "学生番号半角8数字"))
+           (:p "member2 "
+               (:input :name "m2" :placeholder "学生番号半角8数字"))
+           (:p "member3 "
+               (:input :name "m3" :placeholder "学生番号半角8数字"))
            (:p (:input :type "submit" :value "create")))
     (:p (:a :href "/index" "back"))))
 
-;; how about returns (+ 1 count())?
-(defun max-id ()
-  (length (docs (iter (cl-mongo:db.find *coll* :all)))))
+;;BUG.
+(defun unique? (key value)
+  (not (docs (cl-mongo:db.find *coll* ($ ($ "status" 1) ($ key value))))))
+
+(defun unique-mem? (mem)
+  (and (unique? "m1" mem)
+       (unique? "m2" mem)
+       (unique? "m3" mem)))
+
+(defun unique-name? (name)
+  (unique? "name" name))
+
+;;FIXME ださい。
+(defun validate (name m1 m2 m3)
+  (and (unique-name? name)
+       (unique-mem? m1)
+       (unique-mem? m2)
+       (unique-mem? m3)))
 
 (define-easy-handler (create :uri "/create") (name m1 m2 m3)
-  (let ((id (+ 1 (max-id))))
-    (cl-mongo:db.insert
-     *coll*
-     ($ ($ "id" id)
-        ($ "name" name)
-        ($ "m1" m1)
-        ($ "m2" m2)
-        ($ "m3" m3)
-        ($ "status" 1)))
-    (redirect "/index")
-    ))
+  (if (validate name m1 m2 m3)
+      (let ((id (+ 1 (length
+                      (docs
+                       (iter (cl-mongo:db.find *coll* :all)))))))
+        (cl-mongo:db.insert
+         *coll*
+         ($ ($ "gid" id)
+            ($ "robocar" (mod id *number-of-robocars*))
+            ($ "name" name)
+            ($ "m1" m1)
+            ($ "m2" m2)
+            ($ "m3" m3)
+            ($ "status" 1)))
+        (redirect "/index"))
+      (standard-page
+        (:h2 :class "warn")
+        (:p "グループ名かメンバーに重複があります。")
+        (:p "ブラウザのバックボタンで元のページに戻ってやり直してください。")
+        (:p (:a :href "/index" "top")))))
 
-;;(create :name "name2" :m1 1 :m2 2 :m3 3)
