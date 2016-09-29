@@ -1,6 +1,6 @@
 (in-package :cl-user)
 (defpackage robocar-group
-  (:use :cl :hunchentoot :cl-who :cl-mongo))
+  (:use :cl :hunchentoot :cl-who :cl-mongo :cl-ppcre))
 (in-package :robocar-group)
 
 ;; in production, use "ucome"
@@ -17,7 +17,7 @@
          "[ "
          (:a :href "http://robocar-2017.melt.kyutech.ac.jp" "robocar")
          " | "
-         (:a :href "http://www.melt.kyutech.ac.jp" "hkimura lab.")
+         (:a :href "http://www.melt.kyutech.ac.jp" "hkimura lab")
          " ]")))
 
 (defmacro standard-page (&body body)
@@ -57,10 +57,11 @@
 
 ;; CHECK: sort
 (defun groups ()
-  (docs (iter (cl-mongo:db.sort *coll* ($ "status" 1)
+  (docs (iter (cl-mongo:db.sort *coll*
+                                ($ "status" 1)
                                 :limit 0
                                 :field "gid"
-1                                :asc t))))
+                                :asc t))))
 
 (define-easy-handler (index :uri "/index") ()
   (standard-page
@@ -127,12 +128,18 @@
 (defun unique-name? (name)
   (unique? "name" name))
 
+(defun sid? (num)
+  (cl-ppcre:scan "^[0-9]{8}$" num))
+
 ;;FIXME ださい。
 (defun validate (name m1 m2 m3)
   (and (unique-name? name)
        (unique-mem? m1)
        (unique-mem? m2)
-       (unique-mem? m3)))
+       (unique-mem? m3)
+       (sid? m1)
+       (sid? m2)
+       (sid? m3)))
 
 (define-easy-handler (create :uri "/create") (name m1 m2 m3)
   (if (validate name m1 m2 m3)
@@ -152,6 +159,8 @@
       (standard-page
         (:h2 :class "warn")
         (:p "グループ名かメンバーに重複があります。")
+        (:p "または学生番号打ち間違ったか。")
         (:p "ブラウザのバックボタンで元のページに戻ってやり直してください。")
+        (:p "下の top で戻ると入力を捨てるから注意。")
         (:p (:a :href "/index" "top")))))
 
