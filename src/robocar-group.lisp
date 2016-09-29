@@ -4,18 +4,17 @@
 (in-package :robocar-group)
 
 ;; in production, use "ucome"
-(cl-mongo:db.use "test")
+(cl-mongo:db.use "ucome")
 
 (defvar *number-of-robocars* 40)
-
-(defvar *coll* "rb_2017")
+(defvar *coll* "rb_2016")
 (defvar *http*)
 (defvar *my-addr* "127.0.0.1")
 
 (defmacro navi ()
   `(htm (:p :class "navi"
          "[ "
-         (:a :href "http://robocar-2017.melt.kyutech.ac.jp" "robocar")
+         (:a :href "http://robocar-2016.melt.kyutech.ac.jp" "robocar")
          " | "
          (:a :href "http://www.melt.kyutech.ac.jp" "hkimura lab")
          " ]")))
@@ -36,7 +35,7 @@
       (:body
        (:div
         :class "container"
-        (:h1 :class "page-header hidden-xs" "Robocar 2017 Groups ")
+        (:h1 :class "page-header hidden-xs" "Robocar 2016 Groups ")
         (navi)
         ,@body
         (:hr)
@@ -50,7 +49,8 @@
          "/style.css" "static/style.css") *dispatch-table*)
   (setf *http*
         (make-instance 'easy-acceptor :address *my-addr* :port port))
-  (start *http*))
+  (start *http*)
+  (format t "robocar-group start at http://~a:~a~%" *my-addr* port))
 
 (defun stop-server ()
   (stop *http*))
@@ -164,3 +164,6 @@
         (:p "下の top で戻ると入力を捨てるから注意。")
         (:p (:a :href "/index" "top")))))
 
+(defun main ()
+  (start-server 20167) ;see vm2016:/opt/etc/services
+  (loop (sleep 60)))
