@@ -4,7 +4,6 @@
 
 ## Todo
 
-
 ## Done
 
 * 入力値のバリデーション、それは学生番号か？しかし、コードはウルトラダサい。
@@ -28,9 +27,20 @@ $ mongodb start
 
 ## Installation
 
+Before compiling in production system (vm2016),
+
+* don't forget to define collect database.
+* change user/password if necessary.
+
 ```
 $ git clone https://github.com/hkim0331/robocar-group.git
+$ cd robocar-group
+$ (edit database to use in src/robocar-group.lisp)
+$ make
+$ ./robocar-group
 ```
+
+一番最初の起動時、コレクションが存在していないとエラーになる、かな？
 
 ## Author
 
