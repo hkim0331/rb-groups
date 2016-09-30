@@ -1,15 +1,20 @@
 (in-package :cl-user)
-(defpackage robocar-group
+(defpackage rb-groups
   (:use :cl :hunchentoot :cl-who :cl-mongo :cl-ppcre))
-(in-package :robocar-group)
+(in-package :rb-groups)
 
-;; in production, use "ucome"
+;;FIXME: can not use remote mongodb server
+;;(cl-mongo:db.use "ucome" :mongo (cl-mongo::make-mongo :host "150.69.90.82"))
+;;(setf *mongo-default-host* "150.69.90.82")
+
+;; must use port forward
 (cl-mongo:db.use "ucome")
 
-(defvar *number-of-robocars* 40)
 (defvar *coll* "rb_2016")
-(defvar *http*)
 (defvar *my-addr* "127.0.0.1")
+(defvar *http*)
+
+(defvar *number-of-robocars* 40)
 
 (defmacro navi ()
   `(htm (:p :class "navi"
@@ -41,7 +46,7 @@
         (:hr)
         (:p "programmed by hkimura."))))))
 
-(defun start-server (&optional (port 8080))
+(defun start-server (&optional (port 8081))
   (setf (html-mode) :html5)
   (push (create-static-file-dispatcher-and-handler
          "/robots.txt" "static/robots.txt") *dispatch-table*)
@@ -50,7 +55,7 @@
   (setf *http*
         (make-instance 'easy-acceptor :address *my-addr* :port port))
   (start *http*)
-  (format t "robocar-group start at http://~a:~a~%" *my-addr* port))
+  (format t "rb-groups start at http://~a:~a~%" *my-addr* port))
 
 (defun stop-server ()
   (stop *http*))
@@ -165,5 +170,5 @@
         (:p (:a :href "/index" "top")))))
 
 (defun main ()
-  (start-server 20167) ;see vm2016:/opt/etc/services
+  (start-server)
   (loop (sleep 60)))

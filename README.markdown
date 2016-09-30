@@ -1,4 +1,4 @@
-# Robocar-Group
+# rb-groups
 
 情報処理応用（ロボカー）のグループ作成、貸し出しロボカー割り当てプログラム。
 
@@ -21,7 +21,7 @@ $ mongodb start
 ```
 
 ```
-> (ql:quickload :robocar-group)
+> (ql:quickload :rb-groups)
 > (start-server)
 ```
 
@@ -33,11 +33,11 @@ Before compiling in production system (vm2016),
 * change user/password if necessary.
 
 ```
-$ git clone https://github.com/hkim0331/robocar-group.git
-$ cd robocar-group
-$ (edit database to use in src/robocar-group.lisp)
+$ git clone https://github.com/hkim0331/rb-groups.git
+$ cd rb-groups
+$ (edit database to use in src/rb-groups.lisp)
 $ make
-$ ./robocar-group
+$ ./rb-groups
 ```
 
 一番最初の起動時、コレクションが存在していないとエラーになる、かな？
