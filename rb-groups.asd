@@ -1,5 +1,5 @@
 #|
-  This file is a part of robocar-group project.
+  This file is a part of rb-groups project.
   Copyright (c) 2016 hiroshi kimura
 |#
 
@@ -8,11 +8,11 @@
 |#
 
 (in-package :cl-user)
-(defpackage robocar-group-asd
+(defpackage rb-groups-asd
   (:use :cl :asdf))
-(in-package :robocar-group-asd)
+(in-package :rb-groups-asd)
 
-(defsystem robocar-group
+(defsystem rb-groups
   :version "0.1"
   :author "hiroshi kimura"
   :license ""
@@ -22,7 +22,7 @@
                :cl-mongo)
   :components ((:module "src"
                 :components
-                ((:file "robocar-group"))))
+                ((:file "rb-groups"))))
   :description "group making/maintenace app for robocar class"
   :long-description
   #.(with-open-file (stream (merge-pathnames
@@ -36,4 +36,4 @@
                                :fill-pointer t)))
           (setf (fill-pointer seq) (read-sequence seq stream))
           seq)))
-  :in-order-to ((test-op (test-op robocar-group-test))))
+  :in-order-to ((test-op (test-op rb-groups-test))))
