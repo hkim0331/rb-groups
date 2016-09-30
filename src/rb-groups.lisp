@@ -3,18 +3,17 @@
   (:use :cl :hunchentoot :cl-who :cl-mongo :cl-ppcre))
 (in-package :rb-groups)
 
-;;FIXME: can not use remote mongodb server
-;;(cl-mongo:db.use "ucome" :mongo (cl-mongo::make-mongo :host "150.69.90.82"))
-;;(setf *mongo-default-host* "150.69.90.82")
-
-;; must use port forward
-(cl-mongo:db.use "ucome")
-
+(defvar *version* "0.4")
 (defvar *coll* "rb_2016")
 (defvar *my-addr* "127.0.0.1")
 (defvar *http*)
-
 (defvar *number-of-robocars* 40)
+
+;;FIXME: can not use remote mongodb server
+;;(cl-mongo:db.use "ucome" :mongo (cl-mongo::make-mongo :host "150.69.90.82"))
+;;(setf *mongo-default-host* "150.69.90.82")
+;; must use port forward
+(cl-mongo:db.use "ucome")
 
 (defmacro navi ()
   `(htm (:p :class "navi"
