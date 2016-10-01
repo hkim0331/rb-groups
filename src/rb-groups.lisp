@@ -10,8 +10,8 @@
 (defvar *number-of-robocars* 40)
 
 ;;FIXME: can not use remote mongodb server
-;;(cl-mongo:db.use "ucome" :mongo (cl-mongo::make-mongo :host "150.69.90.82"))
 ;;(setf *mongo-default-host* "150.69.90.82")
+;;(cl-mongo:db.use "ucome" :mongo (cl-mongo::make-mongo :host "10.211.55.2"))
 ;; must use port forward
 (cl-mongo:db.use "ucome")
 
@@ -169,5 +169,5 @@
         (:p (:a :href "/index" "top")))))
 
 (defun main ()
-  (start-server)
+  (start-server 20167)
   (loop (sleep 60)))
