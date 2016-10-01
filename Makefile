@@ -8,10 +8,15 @@ rb-groups:
 
 start: rb-groups
 	@echo check location of the static folder.
-	nohup rb-groups &
+	nohup ./rb-groups &
 
 stop:
 	pkill rb-groups
+
+restart:
+	make stop
+	make rb-groups
+	make start
 
 repl:
 	@echo before \'make repl\', check ssh port forwarding.
