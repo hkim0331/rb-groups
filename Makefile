@@ -12,10 +12,11 @@ start: rb-groups
 
 stop:
 	pkill rb-groups
+	mv nohup.out nohup.out.`date +%F_%T`
 
 restart:
 	make stop
-	make rb-groups
+	make clean
 	make start
 
 repl:
