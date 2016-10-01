@@ -1,13 +1,14 @@
 # rb-groups requires mongodb works at 127.0.0.1:27017
 
-binary:
+rb-groups:
 	sbcl \
 		--eval "(ql:quickload :rb-groups)" \
 		--eval "(in-package :rb-groups)" \
-		--eval "(sb-ext:save-lisp-and-die \"src/rb-groups\" :executable t :toplevel 'main)"
+		--eval "(sb-ext:save-lisp-and-die \"rb-groups\" :executable t :toplevel 'main)"
 
-start: binary
-	nohup ./src/rb-groups &
+start: rb-groups
+	@echo check location of the static folder.
+	nohup rb-groups &
 
 stop:
 	pkill rb-groups
@@ -20,7 +21,7 @@ repl:
 		--eval "(start-server)"
 
 clean:
-	${RM} ./src/rb-groups
+	${RM} rb-groups
 	find ./ -name \*.bak -exec rm {} \;
 
 
