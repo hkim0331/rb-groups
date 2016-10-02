@@ -59,7 +59,6 @@
 (defun stop-server ()
   (stop *http*))
 
-;; CHECK: sort
 (defun groups ()
   (docs (iter (cl-mongo:db.sort *coll*
                                 ($ "status" 1)
@@ -123,7 +122,6 @@
          (:p (:a :href "/index" "back")))
         (require-authorization))))
 
-;;BUG.
 (defun unique? (key value)
   (not (docs (cl-mongo:db.find *coll* ($ ($ "status" 1) ($ key value))))))
 
@@ -142,11 +140,9 @@
 (defun validate (name m1 m2 m3)
   (and (unique-name? name)
        (unique-mem? m1)
-       (unique-mem? m2)
-       (unique-mem? m3)
-       (sid? m1)
-       (sid? m2)
-       (sid? m3)))
+       (or (string= "" m2) (and (sid? m2) (unique-mem? m2)))
+       (or (string= "" m3) (and (sid? m3) (unique-mem? m3)))
+       ))
 
 (define-easy-handler (create :uri "/create") (name m1 m2 m3)
   (if (validate name m1 m2 m3)
