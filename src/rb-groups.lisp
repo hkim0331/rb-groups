@@ -43,7 +43,7 @@
         (navi)
         ,@body
         (:hr)
-        (:p "programmed by hkimura." (str *versions*)))))))
+        (:p "programmed by hkimura." (str *version*)))))))
 
 (defun start-server (&optional (port 8081))
   (setf (html-mode) :html5)
