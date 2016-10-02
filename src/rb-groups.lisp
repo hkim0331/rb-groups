@@ -43,7 +43,7 @@
         (navi)
         ,@body
         (:hr)
-        (:p "programmed by hkimura."))))))
+        (:p "programmed by hkimura." (str *version*)))))))
 
 (defun start-server (&optional (port 8081))
   (setf (html-mode) :html5)
@@ -106,19 +106,22 @@
         (require-authorization))))
 
 (define-easy-handler (new :uri "/new") ()
-  (standard-page
-    (:h2 "Group creation")
-    (:form :method "post" :action "/create"
-           (:p "group name "
-               (:input :name "name" :placeholder "ユニークな名前"))
-           (:p "member1 "
-               (:input :name "m1" :placeholder "学生番号半角8数字"))
-           (:p "member2 "
-               (:input :name "m2" :placeholder "学生番号半角8数字"))
-           (:p "member3 "
-               (:input :name "m3" :placeholder "学生番号半角8数字"))
-           (:p (:input :type "submit" :value "create")))
-    (:p (:a :href "/index" "back"))))
+  (multiple-value-bind (user pass) (authorization)
+    (if (and (string= user "robocar") (string= pass "2016"))
+        (standard-page
+         (:h2 "Group creation")
+         (:form :method "post" :action "/create"
+                (:p "group name "
+                    (:input :name "name" :placeholder "ユニークな名前"))
+                (:p "member1 "
+                    (:input :name "m1" :placeholder "学生番号半角8数字"))
+                (:p "member2 "
+                    (:input :name "m2" :placeholder "学生番号半角8数字"))
+                (:p "member3 "
+                    (:input :name "m3" :placeholder "学生番号半角8数字"))
+                (:p (:input :type "submit" :value "create")))
+         (:p (:a :href "/index" "back")))
+        (require-authorization))))
 
 ;;BUG.
 (defun unique? (key value)
