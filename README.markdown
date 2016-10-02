@@ -1,9 +1,8 @@
-# Robocar-Group
+# rb-groups
 
 情報処理応用（ロボカー）のグループ作成、貸し出しロボカー割り当てプログラム。
 
 ## Todo
-
 
 ## Done
 
@@ -22,15 +21,26 @@ $ mongodb start
 ```
 
 ```
-> (ql:quickload :robocar-group)
+> (ql:quickload :rb-groups)
 > (start-server)
 ```
 
 ## Installation
 
+Before compiling in production system (vm2016),
+
+* don't forget to define collect database.
+* change user/password if necessary.
+
 ```
-$ git clone https://github.com/hkim0331/robocar-group.git
+$ git clone https://github.com/hkim0331/rb-groups.git
+$ cd rb-groups
+$ (edit database to use in src/rb-groups.lisp)
+$ make
+$ ./rb-groups
 ```
+
+一番最初の起動時、コレクションが存在していないとエラーになる、かな？
 
 ## Author
 

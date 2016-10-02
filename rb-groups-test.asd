@@ -1,22 +1,22 @@
 #|
-  This file is a part of robocar-group project.
+  This file is a part of rb-groups project.
   Copyright (c) 2016 hiroshi kimura
 |#
 
 (in-package :cl-user)
-(defpackage robocar-group-test-asd
+(defpackage rb-groups-test-asd
   (:use :cl :asdf))
-(in-package :robocar-group-test-asd)
+(in-package :rb-groups-test-asd)
 
-(defsystem robocar-group-test
+(defsystem rb-groups-test
   :author "hiroshi kimura"
   :license ""
-  :depends-on (:robocar-group
+  :depends-on (:rb-groups
                :prove)
   :components ((:module "t"
                 :components
-                ((:test-file "robocar-group"))))
-  :description "Test system for robocar-group"
+                ((:test-file "rb-groups"))))
+  :description "Test system for rb-groups"
 
   :defsystem-depends-on (:prove-asdf)
   :perform (test-op :after (op c)
