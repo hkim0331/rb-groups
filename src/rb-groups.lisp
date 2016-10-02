@@ -3,7 +3,7 @@
   (:use :cl :hunchentoot :cl-who :cl-mongo :cl-ppcre))
 (in-package :rb-groups)
 
-(defvar *version* "0.5")
+(defvar *version* "0.6")
 (defvar *coll* "rb_2016")
 (defvar *my-addr* "127.0.0.1")
 (defvar *http*)
@@ -47,6 +47,8 @@
 
 (defun start-server (&optional (port 8081))
   (setf (html-mode) :html5)
+  (push (create-static-file-dispatcher-and-handler
+         "/favicon.ico" "static/favicon.ico") *dispatch-table*)
   (push (create-static-file-dispatcher-and-handler
          "/robots.txt" "static/robots.txt") *dispatch-table*)
   (push (create-static-file-dispatcher-and-handler
