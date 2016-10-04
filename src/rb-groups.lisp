@@ -3,16 +3,11 @@
   (:use :cl :hunchentoot :cl-who :cl-mongo :cl-ppcre))
 (in-package :rb-groups)
 
-(defvar *version* "0.6")
+(defvar *version* "0.6.1")
 (defvar *coll* "rb_2016")
 (defvar *my-addr* "127.0.0.1")
 (defvar *http*)
 (defvar *number-of-robocars* 40)
-
-;;FIXME: can not use remote mongodb server
-;;(setf *mongo-default-host* "150.69.90.82")
-;;(cl-mongo:db.use "ucome" :mongo (cl-mongo::make-mongo :host "10.211.55.2"))
-;; must use port forward
 
 (defmacro navi ()
   `(htm (:p :class "navi"
@@ -45,7 +40,12 @@
         (:p "programmed by hkimura." (str *version*)))))))
 
 (defun start-server (&optional (port 8081))
+  ;;FIXME: can not use remote mongodb server
+  ;;(setf *mongo-default-host* "150.69.90.82")
+  ;;(cl-mongo:db.use "ucome" :mongo (cl-mongo::make-mongo :host "10.211.55.2"))
+  ;; must use port forward
   (cl-mongo:db.use "ucome")
+
   (setf (html-mode) :html5)
   (push (create-static-file-dispatcher-and-handler
          "/favicon.ico" "static/favicon.ico") *dispatch-table*)
