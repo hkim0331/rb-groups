@@ -3,7 +3,7 @@
   (:use :cl :hunchentoot :cl-who :cl-mongo :cl-ppcre))
 (in-package :rb-groups)
 
-(defvar *version* "0.6.1")
+(defvar *version* "0.7")
 (defvar *coll* "rb_2016")
 (defvar *my-addr* "127.0.0.1")
 (defvar *http*)
