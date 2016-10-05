@@ -13,7 +13,7 @@
 (in-package :rb-groups-asd)
 
 (defsystem rb-groups
-:version "0.6.1"
+:version "0.7"
   :author "hiroshi kimura"
   :license ""
   :depends-on (:hunchentoot
