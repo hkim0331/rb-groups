@@ -138,7 +138,7 @@
 (defun sid? (num)
   (cl-ppcre:scan "^[0-9]{8}$" num))
 
-;;FIXME ださい。
+;;FIXME, ださい。
 (defun validate (name m1 m2 m3)
   (and (unique-name? name)
        (unique-mem? m1)
@@ -146,11 +146,19 @@
        (or (string= "" m3) (and (sid? m3) (unique-mem? m3)))
        ))
 
+(defun id-max ()
+  (get-element
+   "gid"
+   (first (docs (cl-mongo:db.sort
+                 *coll*
+                 ($ "status" 1)
+                 :limit 1
+                 :field "gid"
+                 :asc nil)))))
+
 (define-easy-handler (create :uri "/create") (name m1 m2 m3)
   (if (validate name m1 m2 m3)
-      (let ((id (+ 1 (length
-                      (docs
-                       (iter (cl-mongo:db.find *coll* :all)))))))
+      (let ((id (+ 1 (id-max))))
         (cl-mongo:db.insert
          *coll*
          ($ ($ "gid" id)
