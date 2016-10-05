@@ -108,7 +108,7 @@
 
 (define-easy-handler (new :uri "/new") ()
   (multiple-value-bind (user pass) (authorization)
-    (if (and (string= user "robocar") (string= pass "2016"))
+    (if (and (string= user "robocar") (string= pass "omuretu"))
         (standard-page
          (:h2 "Group creation")
          (:form :method "post" :action "/create"
