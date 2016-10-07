@@ -37,7 +37,7 @@
         (navi)
         ,@body
         (:hr)
-        (:p "programmed by hkimura." (str *version*)))))))
+        (:p "programmed by hkimura, version " (str *version*)))))))
 
 (defun start-server (&optional (port 8081))
   ;;FIXME: can not use remote mongodb server
@@ -108,7 +108,7 @@
 
 (define-easy-handler (new :uri "/new") ()
   (multiple-value-bind (user pass) (authorization)
-    (if (and (string= user "robocar") (string= pass "omuretu"))
+    (if (and (string= user "robocar") (string= pass "ikasumi"))
         (standard-page
          (:h2 "Group creation")
          (:form :method "post" :action "/create"
